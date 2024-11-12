@@ -9,14 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@nextui-org/react": "^2.4.8",
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
+    "framer-motion": "^11.11.11",
+    "mongoose": "^8.8.0",
+    "next": "14.2.16",
+    "next-auth": "^4.24.10",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.16"
+    "sweetalert2": "^11.14.5"
   },
   "devDependencies": {
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
     "eslint": "^8",
-    "eslint-config-next": "14.2.16"
+    "eslint-config-next": "14.2.16",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1"
   }
 }
