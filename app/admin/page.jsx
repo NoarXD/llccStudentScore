@@ -10,6 +10,7 @@ function LoginAdminPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('')
   const { data: session, status } = useSession()
+  const [isDisabled, setIsDisabled] = useState(false);
   const router = useRouter()
 
   const handleLogin = async () => {
@@ -27,6 +28,7 @@ function LoginAdminPage() {
     } catch (err) {
       console.log(err)
     }
+    setIsDisabled(false)
   };
 
   useEffect(() => {
@@ -44,6 +46,7 @@ function LoginAdminPage() {
           <h1 className="text-2xl font-bold">Admin Login</h1>
         </CardHeader>
         <CardBody className="flex flex-col gap-4">
+          <div className='text-red-500'>{error}</div>
           <Input
             type="text"
             label="Username"
@@ -58,7 +61,7 @@ function LoginAdminPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <Button color="primary" onClick={handleLogin}>
+          <Button disabled={isDisabled} color="primary" onClick={handleLogin}>
             Login
           </Button>
           {/* <Button color="danger" onPress={() => signOut()}>

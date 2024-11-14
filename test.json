@@ -1,0 +1,66 @@
+{
+    "_id": {
+        "$oid": "6732fbce56fbfc9ccdb0c966"
+    },
+    "studentId": "60002",
+    "gender": "female",
+    "nameEng": "y",
+    "nameLao": "y",
+    "gen": {
+        "$numberInt": "6"
+    },
+    "birthday": {
+        "$date": {
+            "$numberLong": "1731369600000"
+        }
+    },
+    "scores": [
+        {
+            "term1": {
+                "reading": null,
+                "speaking": null,
+                "grammar": null,
+                "wordCombination": null
+            },
+            "term2": {
+                "reading": null,
+                "speaking": null,
+                "grammar": null,
+                "tense": null
+            },
+            "term3": {
+                "reading": null,
+                "speaking": null,
+                "grammar": null,
+                "tense": null
+            },
+            "term4": {
+                "reading": null,
+                "speaking": null,
+                "grammar": null,
+                "listening": null,
+                "translation": null
+            },
+            "term5": {
+                "reading": null,
+                "speaking": null,
+                "grammar": null,
+                "listening": null,
+                "translation": null
+            },
+            "term6": {
+                "reading": null,
+                "speaking": null,
+                "grammar": null,
+                "listening": null,
+                "translation": null
+            },
+            "_id": {
+                "$oid": "6732fc3456fbfc9ccdb0c96f"
+            }
+        }
+    ],
+    "__v": {
+        "$numberInt": "1"
+    }
+}

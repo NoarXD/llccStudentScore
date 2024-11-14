@@ -8,7 +8,10 @@ import Swal from 'sweetalert2'
 
 function EditStudentPage() {
     const [searchMethod, setSearchMethod] = useState('self')
-    const [nameEng, setNameEng] = useState('')
+    const [firstNameEng, setFirstNameEng] = useState('')
+    const [lastNameEng, setLastNameEng] = useState('')
+    const [firstNameLao, setFirstNameLao] = useState('')
+    const [lastNameLao, setLastNameLao] = useState('')
     const [gen, setGen] = useState('')
     const [gender, setGender] = useState('')
     const [studentId, setStudentId] = useState('')
@@ -20,8 +23,10 @@ function EditStudentPage() {
     const { isOpen: isManageStudent, onOpen: onManageStudent, onOpenChange: onManageStudentChange } = useDisclosure()
     const [selectedStudent, setSelectedStudent] = useState(null)
 
-    const [newNameEng, setNewNameEng] = useState('')
-    const [newNameLao, setNewNameLao] = useState('')
+    const [newFirstNameEng, setNewFirstNameEng] = useState('')
+    const [newLastNameEng, setNewLastNameEng] = useState('')
+    const [newFirstNameLao, setNewFirstNameLao] = useState('')
+    const [newLastNameLao, setNewLastNameLao] = useState('')
     const [newGen, setNewGen] = useState('')
     const [newGender, setNewGender] = useState('')
     const [newBirthday, setNewBirthday] = useState('')
@@ -53,7 +58,7 @@ function EditStudentPage() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ studentId: studentId, nameEng: newNameEng, nameLao: newNameLao, gen: newGen, gender: newGender, birthday: newBirthday })
+                body: JSON.stringify({ studentId: studentId, firstNameEng: newFirstNameEng, lastNameEng: newLastNameEng, firstNameLao: newFirstNameLao, lastNameLao: newLastNameLao, gen: newGen, gender: newGender, birthday: newBirthday })
             })
             if (!res.ok) {
                 throw new Error('Failed to update student');
@@ -84,9 +89,14 @@ function EditStudentPage() {
             );
         }
         else if (searchMethod === 'self') {
-            if (nameEng) {
+            if (firstNameEng) {
                 filtered = filtered.filter(student =>
-                    student.nameEng.toLowerCase().includes(nameEng.toLowerCase())
+                    student.firstNameEng.toLowerCase().includes(firstNameEng.toLowerCase())
+                );
+            }
+            if (firstNameLao) {
+                filtered = filtered.filter(student =>
+                    student.firstNameLao.toLowerCase().includes(firstNameLao.toLowerCase())
                 );
             }
             if (gen) {
@@ -109,8 +119,10 @@ function EditStudentPage() {
         const student = students.find(s => s.studentId === studentId);
         if (student) {
             setSelectedStudent(student);
-            setNewNameEng(student.nameEng);
-            setNewNameLao(student.nameLao);
+            setNewFirstNameEng(student.firstNameEng);
+            setNewLastNameEng(student.lastNameEng);
+            setNewFirstNameLao(student.firstNameLao);
+            setNewLastNameLao(student.lastNameLao);
             setNewGen(student.gen);
             setNewGender(student.gender);
             setNewBirthday(student.birthday ? new Date(student.birthday).toISOString().split('T')[0] : '');
@@ -149,7 +161,7 @@ function EditStudentPage() {
                     });
                 }
             });
-            
+
 
         } catch (error) {
             console.error('Error deleting student:', error);
@@ -180,13 +192,22 @@ function EditStudentPage() {
                         </Select>
                         {searchMethod === 'self' && (
                             <>
-                                <Input
-                                    type="text"
-                                    label="ຊື່ພາສາອັງກິດ"
-                                    placeholder="ກະລຸນາປ້ອນຊື່ພາສາອັງກິດ"
-                                    value={nameEng}
-                                    onChange={(e) => setNameEng(e.target.value)}
-                                />
+                                <div className='flex gap-3'>
+                                    <Input
+                                        type="text"
+                                        label="ຊື່ພາສາອັງກິດ"
+                                        placeholder="ກະລຸນາປ້ອນຊື່ພາສາອັງກິດ"
+                                        value={firstNameEng}
+                                        onChange={(e) => setFirstNameEng(e.target.value)}
+                                    />
+                                    <Input
+                                        type="text"
+                                        label="ຊື່ພາສາລາວ"
+                                        placeholder="ກະລຸນາປ້ອນຊື່ພາສາລາວ"
+                                        value={firstNameLao}
+                                        onChange={(e) => setFirstNameLao(e.target.value)}
+                                    />
+                                </div>
                                 <Input
                                     type="number"
                                     label="ລຸ່ນ"
@@ -226,7 +247,9 @@ function EditStudentPage() {
                             <TableHeader>
                                 <TableColumn>ລະຫັດນັກຮຽນ</TableColumn>
                                 <TableColumn>ຊື່ພາສາອັງກິດ</TableColumn>
+                                <TableColumn>ນາມສະກຸນພາສາອັງກິດ</TableColumn>
                                 <TableColumn>ຊື່ພາສາລາວ</TableColumn>
+                                <TableColumn>ນາມສະກຸນພາສາລາວ</TableColumn>
                                 <TableColumn>ເພດ</TableColumn>
                                 <TableColumn>ລຸ່ນ</TableColumn>
                                 <TableColumn>ວັນເກີດ</TableColumn>
@@ -242,13 +265,17 @@ function EditStudentPage() {
                                         <TableCell>{""}</TableCell>
                                         <TableCell>{""}</TableCell>
                                         <TableCell>{""}</TableCell>
+                                        <TableCell>{""}</TableCell>
+                                        <TableCell>{""}</TableCell>
                                     </TableRow>
                                 ) : (
                                     items.map((student) => (
                                         <TableRow key={student._id}>
                                             <TableCell>{student.studentId}</TableCell>
-                                            <TableCell>{student.nameEng}</TableCell>
-                                            <TableCell>{student.nameLao}</TableCell>
+                                            <TableCell>{student.firstNameEng}</TableCell>
+                                            <TableCell>{student.lastNameEng}</TableCell>
+                                            <TableCell>{student.firstNameLao}</TableCell>
+                                            <TableCell>{student.lastNameLao}</TableCell>
                                             <TableCell>{student.gender === 'male' ? 'ຊາຍ' : 'ຍິງ'}</TableCell>
                                             <TableCell>{student.gen}</TableCell>
                                             <TableCell>{new Date(student.birthday).toLocaleDateString()}</TableCell>
@@ -277,22 +304,36 @@ function EditStudentPage() {
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">ຈັດການຂໍ້ມູນນັກຮຽນ {selectedStudent?.nameEng}</ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">ຈັດການຂໍ້ມູນນັກຮຽນ {selectedStudent?.firstNameEng} {selectedStudent?.lastNameEng}</ModalHeader>
                             <ModalBody>
                                 <div className="grid grid-cols-2 gap-4">
                                     <Input
                                         type="text"
                                         label="ຊື່ພາສາອັງກິດ"
                                         placeholder="ກະລຸນາປ້ອນຊື່ພາສາອັງກິດ"
-                                        value={newNameEng}
-                                        onChange={(e) => setNewNameEng(e.target.value)}
+                                        value={newFirstNameEng}
+                                        onChange={(e) => setNewFirstNameEng(e.target.value)}
+                                    />
+                                    <Input
+                                        type="text"
+                                        label="ນາມສະກຸນພາສາອັງກິດ"
+                                        placeholder="ກະລຸນາປ້ອນນາມສະກຸນພາສາອັງກິດ"
+                                        value={newLastNameEng}
+                                        onChange={(e) => setNewLastNameEng(e.target.value)}
                                     />
                                     <Input
                                         type="text"
                                         label="ຊື່ພາສາລາວ"
                                         placeholder="ກະລຸນາປ້ອນຊື່ພາສາລາວ"
-                                        value={newNameLao}
-                                        onChange={(e) => setNewNameLao(e.target.value)}
+                                        value={newFirstNameLao}
+                                        onChange={(e) => setNewFirstNameLao(e.target.value)}
+                                    />
+                                    <Input
+                                        type="text"
+                                        label="ນາມສະກຸນພາສາລາວ"
+                                        placeholder="ກະລຸນາປ້ອນນາມສະກຸນພາສາລາວ"
+                                        value={newLastNameLao}
+                                        onChange={(e) => setNewLastNameLao(e.target.value)}
                                     />
                                     <Input
                                         type="number"
@@ -305,6 +346,7 @@ function EditStudentPage() {
                                         label="ເພດ"
                                         placeholder="ກະລຸນາເລືອກເພດ"
                                         value={newGender}
+                                        defaultSelectedKeys={[newGender]}
                                         onChange={(e) => setNewGender(e.target.value)}>
                                         <SelectItem key="male" value="male">ຊາຍ</SelectItem>
                                         <SelectItem key="female" value="female">ຍິງ</SelectItem>

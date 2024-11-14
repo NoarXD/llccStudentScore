@@ -4,105 +4,89 @@ import { NextResponse } from "next/server";
 
 export async function PUT(req) {
     try {
-        const { studentId, term, reading, speaking, listening, grammar, tense, wordComb, translation } = await req.json();
-        
+        const { studentId, term, reading, speaking, listening, grammar, tense, wordCombination, translation } = await req.json();
+
         if (!studentId || !term) {
-            return NextResponse.json({ 
-                message: "Student ID and term are required",
-                status: 400 
-            });
+            throw new Error("Student ID and term are required")
         }
 
         await connectDB();
 
         const student = await Student.findOne({ studentId });
         if (!student) {
-            return NextResponse.json({ 
-                message: "Student not found", 
-                status: 404 
-            });
-        }
-
-        // Initialize scores array if it doesn't exist
-        if (!student.scores || !student.scores.length) {
-            student.scores = [{
-                reading: [{}],
-                speaking: [{}], 
-                listening: [{}],
-                grammar: [{}],
-                tense: [{}],
-                translation: [{}],
-                wordCombination: [{}]
-            }];
-        }
-
-        // Validate term is between 1-6
-        const termNum = parseInt(term);
-        if (isNaN(termNum) || termNum < 1 || termNum > 6) {
             return NextResponse.json({
-                message: "Term must be between 1 and 6",
-                status: 400
+                message: "Student not found",
+                status: 404
             });
         }
 
-        // Validate score values are between 0-100
-        const scores = {reading, speaking, listening, grammar, tense, translation, wordComb};
-        for (const [key, value] of Object.entries(scores)) {
-            if (value !== undefined) {
-                const score = parseInt(value);
-                if (isNaN(score) || score < 0 || score > 100) {
-                    return NextResponse.json({
-                        message: `${key} score must be between 0 and 100`,
-                        status: 400
-                    });
-                }
-            }
+        if (!student.scores || !student.scores.length) {
+            student.scores = {
+                term1: {
+                    reading: 0,
+                    speaking: 0,
+                    grammar: 0,
+                    wordCombination: 0,
+                },
+                term2: {
+                    reading: 0,
+                    speaking: 0,
+                    grammar: 0,
+                    tense: 0,
+                },
+                term3: {
+                    reading: 0,
+                    speaking: 0,
+                    grammar: 0,
+                    tense: 0,
+                },
+                term4: {
+                    reading: 0,
+                    speaking: 0,
+                    grammar: 0,
+                    listening: 0,
+                    translation: 0,
+                },
+                term5: {
+                    reading: 0,
+                    speaking: 0,
+                    grammar: 0,
+                    listening: 0,
+                    translation: 0,
+                },
+                term6: {
+                    reading: 0,
+                    speaking: 0,
+                    grammar: 0,
+                    listening: 0,
+                    translation: 0,
+                },
+            };
         }
 
         const termKey = `term${term}`;
-
-        // Update each score category if provided
-        if (reading !== undefined) {
-            student.scores[0].reading[0][termKey] = parseInt(reading);
-        }
-        
-        if (speaking !== undefined) {
-            student.scores[0].speaking[0][termKey] = parseInt(speaking);
-        }
-
-        if (listening !== undefined) {
-            student.scores[0].listening[0][termKey] = parseInt(listening);
-        }
-
-        if (grammar !== undefined) {
-            student.scores[0].grammar[0][termKey] = parseInt(grammar);
-        }
-
-        if (tense !== undefined) {
-            student.scores[0].tense[0][termKey] = parseInt(tense);
-        }
-
-        if (translation !== undefined) {
-            student.scores[0].translation[0][termKey] = parseInt(translation);
-        }
-
-        if (wordComb !== undefined) {
-            student.scores[0].wordCombination[0][termKey] = parseInt(wordComb);
-        }
+        student.scores[0][termKey].reading = reading;
+        student.scores[0][termKey].speaking = speaking;
+        student.scores[0][termKey].grammar = grammar;
+        student.scores[0][termKey].wordCombination = wordCombination;
+        student.scores[0][termKey].tense = tense;
+        student.scores[0][termKey].listening = listening;
+        student.scores[0][termKey].translation = translation;
 
         await student.save();
 
-        return NextResponse.json({ 
+        return NextResponse.json({
             message: "Score updated successfully",
-            status: 200 
+            status: 200
         });
+
 
     } catch (error) {
         console.error("Error updating score:", error);
-        return NextResponse.json({ 
-            message: "Error updating score", 
+        return NextResponse.json({
+            message: "Error updating score",
             error: error.message,
-            status: 500 
+            status: 500
         });
     }
 }

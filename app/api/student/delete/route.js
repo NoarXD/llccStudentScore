@@ -6,7 +6,7 @@ export async function DELETE(request) {
     try {
         const { studentId } = await request.json()
         await connectDB()
-        await Student.findOneAndDelete({ studentId })
+        await Student.deleteOne({ studentId })
         return NextResponse.json({ message: 'Student deleted successfully' }, { status: 200 })
     } catch (error) {
         return NextResponse.json({ message: 'Error deleting student' }, { status: 500 })

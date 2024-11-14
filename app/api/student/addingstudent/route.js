@@ -1,29 +1,98 @@
+// นำเข้าโมเดลนักเรียน
 import Student from "../../../../models/student";
+// เชื่อมต่อกับฐานข้อมูล
 import connectDB from "../../../../lib/mongodb";
 import { NextResponse } from "next/server";
 
+// ฟังก์ชันสำหรับการเพิ่มนักเรียน
 export async function POST(req) {
     try {
-        const { gender, nameEng, nameLao, gen, birthday } = await req.json();
-        if (!gender || !nameEng || !nameLao || !gen || !birthday) {
-            return NextResponse.json({ message: "All fields are required"}, { status: 400 });
-        }
-        await connectDB();
-        const students = await Student.find({ gen });
-        const studentCount = students.length;
-        const paddedCount = String(studentCount + 1).padStart(4, '0');
-        const studentId = `${gen}${paddedCount}`;
-        const existingStudent = await Student.findOne({ studentId });
-        if (existingStudent) {
-            return NextResponse.json({ 
-                message: "Student ID already exists", 
-                status: 400 
-            });
+        // ดึงข้อมูลจากคำขอ
+        const { gender, firstNameEng, lastNameEng, firstNameLao, lastNameLao, gen, birthday } = await req.json();
+        // ตรวจสอบว่าข้อมูลทั้งหมดถูกกรอกหรือไม่
+        if (!gender || !firstNameEng || !lastNameEng || !firstNameLao || !lastNameLao || !gen || !birthday) {
+            return NextResponse.json({ message: "ทุกฟิลด์ต้องถูกกรอก" }, { status: 400 });
         }
 
-        await Student.create({ studentId, gender, nameEng, nameLao, gen, birthday});
-        return NextResponse.json({ message: "Adding Student Success", status: 200 });
+        // เชื่อมต่อกับฐานข้อมูล
+        await connectDB();
+
+        // แปลงวันเกิดเป็นวันที่
+        const birthDate = new Date(birthday);
+        const yearOfBirth = birthDate.getFullYear().toString().slice(-2);
+        const monthOfBirth = String(birthDate.getMonth() + 1).padStart(2, '0');
+
+        // นับจำนวนของนักเรียนในรุ่น
+        let studentCount = await Student.countDocuments({ gen });
+        let paddedCount;
+        let studentId;
+        let isUnique = false;
+
+        // สร้าง studentId ที่ไม่ซ้ำกัน
+        do {
+            paddedCount = String(studentCount + 1);
+            studentId = `${gen}${yearOfBirth}${monthOfBirth}${paddedCount}`;
+            const existingStudent = await Student.findOne({ studentId });
+            isUnique = !existingStudent;
+            if (!isUnique) studentCount++;
+        } while (!isUnique);
+
+        // สร้างนักเรียนใหม่ในฐานข้อมูล
+        await Student.create({ studentId, gender, firstNameEng, lastNameEng, firstNameLao, lastNameLao, gen, birthday });
+
+        // ค้นหานักเรียนที่เพิ่งสร้าง
+        const student = await Student.findOne({ studentId });
+
+        // ตรวจสอบคะแนนของนักเรียน
+        if (!student.scores || !student.scores.length) {
+            student.scores = {
+                term1: {
+                    reading: 0,
+                    speaking: 0,
+                    grammar: 0,
+                    wordCombination: 0,
+                },
+                term2: {
+                    reading: 0,
+                    speaking: 0,
+                    grammar: 0,
+                    tense: 0,
+                },
+                term3: {
+                    reading: 0,
+                    speaking: 0,
+                    grammar: 0,
+                    tense: 0,
+                },
+                term4: {
+                    reading: 0,
+                    speaking: 0,
+                    grammar: 0,
+                    listening: 0,
+                    translation: 0,
+                },
+                term5: {
+                    reading: 0,
+                    speaking: 0,
+                    grammar: 0,
+                    listening: 0,
+                    translation: 0,
+                },
+                term6: {
+                    reading: 0,
+                    speaking: 0,
+                    grammar: 0,
+                    listening: 0,
+                    translation: 0,
+                },
+            };
+        }
+
+        // บันทึกข้อมูลนักเรียน
+        await student.save();
+        return NextResponse.json({ message: "เพิ่มนักเรียนสำเร็จ" }, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ message: "Adding Student Failed", error: error.message, status: 500 });
+        console.error("เกิดข้อผิดพลาดในการเพิ่มนักเรียน:", error);
+        return NextResponse.json({ message: "การเพิ่มนักเรียนล้มเหลว", error: error.message }, { status: 500 });
     }
 }
