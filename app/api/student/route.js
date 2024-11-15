@@ -6,14 +6,7 @@ export async function GET(req) {
     try {
         await connectDB();
         const students = await Student.find();
-
-        // สร้าง response พร้อม headers ป้องกัน cache
-        const response = NextResponse.json(students);
-        response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-        response.headers.set('Pragma', 'no-cache');
-        response.headers.set('Expires', '0');
-
-        return response;
+        return NextResponse.json(students, { headers: { 'Cache-Control': 'no-cache, no-store' } });
     } catch (error) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
