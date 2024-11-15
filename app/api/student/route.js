@@ -6,7 +6,7 @@ export async function GET(req) {
     try {
         await connectDB();
         const students = await Student.find();
-        return NextResponse.json(students, { headers: { 'Cache-Control': 'no-cache, no-store' } });
+        return NextResponse.json(students);
     } catch (error) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }

@@ -3,6 +3,7 @@ import Student from "../../../../models/student";
 // เชื่อมต่อกับฐานข้อมูล
 import connectDB from "../../../../lib/mongodb";
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 // ฟังก์ชันสำหรับการเพิ่มนักเรียน
 export async function POST(req) {
@@ -90,6 +91,9 @@ export async function POST(req) {
 
         // บันทึกข้อมูลนักเรียน
         await student.save();
+        revalidatePath("/");
+        revalidatePath("/admin/dashboard/studentscore");
+        revalidatePath("/admin/dashboard/editstudent");
         return NextResponse.json({ message: "เพิ่มนักเรียนสำเร็จ" }, { status: 200 });
     } catch (error) {
         console.error("เกิดข้อผิดพลาดในการเพิ่มนักเรียน:", error);
