@@ -6,6 +6,8 @@ import AdminNavbar from '../../../components/AdminNavbar'
 import { useRouter } from 'next/navigation'
 import Swal from 'sweetalert2'
 import Head from 'next/head'
+import { revalidatePath } from "next/cache";
+
 
 function AddingStudentPage() {
   const [firstNameEng, setFirstNameEng] = useState('');
@@ -42,6 +44,7 @@ function AddingStudentPage() {
         setGen('');
         setGender('');
         setBirthday('');
+        revalidatePath("/")
         Swal.fire({
           icon: "success",
           title: "ສຳເລັດ",
